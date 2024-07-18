@@ -1,7 +1,8 @@
 import json
 import os
-import boto3
 from dotenv import load_dotenv
+import boto3
+import openai
 
 # Load environment variables from .env file
 load_dotenv()
@@ -18,6 +19,7 @@ OPENAI_API_KEY       = os.getenv("OPENAI_API_KEY")
 CARBON_PROJECT       = os.getenv("CARBON_PROJECT")
 CARBON_MODEL         = os.getenv("CARBON_MODEL")
 CARBON_INSTRUCTIONS  = os.getenv("CARBON_INSTRUCTIONS")
+CARBON_FILENAME      = os.getenv("CARBON_FILENAME")
 CARBON_REQUEST       = os.getenv("CARBON_REQUEST")
 CARBON_ISSUE_ID      = os.getenv("CARBON_ISSUE_ID")
 CARBON_PR_ID         = os.getenv("CARBON_PR_ID")
@@ -51,3 +53,7 @@ def save_config(new_config: dict):
         Key=f"{CARBON_PROJECT}.json",
         Body=json.dumps(new_config)
     )
+
+ai_client = openai.Client(
+    api_key=OPENAI_API_KEY
+)
