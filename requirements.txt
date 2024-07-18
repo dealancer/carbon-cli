@@ -1,0 +1,3 @@
+openai~=1.33.0
+boto3~=1.34.122
+python-dotenv~=0.19.2
