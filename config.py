@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 import boto3
 import openai
 
+# Global settings
+GLOBAL_INSTRUCTIONS = "You are the developer. I am provideing a zipped file which contains code. I will ask you to modify this code according to my request. Output should be a zipped file with the same name as the input file. Also provide a brief commit message of changes you made."
+DEFAULT_MODEL = "gpt-3.5-turbo"
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -17,12 +21,38 @@ OPENAI_API_KEY       = os.getenv("OPENAI_API_KEY")
 
 # Carbon settings
 CARBON_PROJECT       = os.getenv("CARBON_PROJECT")
-CARBON_MODEL         = os.getenv("CARBON_MODEL")
-CARBON_INSTRUCTIONS  = os.getenv("CARBON_INSTRUCTIONS")
-CARBON_FILENAME      = os.getenv("CARBON_FILENAME")
+CARBON_MODEL         = os.getenv("CARBON_MODEL") or DEFAULT_MODEL
+CARBON_INSTRUCTIONS  = os.getenv("CARBON_INSTRUCTIONS") + GLOBAL_INSTRUCTIONS
+CARBON_FILE_PATH     = os.getenv("CARBON_FILE_PATH")
 CARBON_REQUEST       = os.getenv("CARBON_REQUEST")
 CARBON_ISSUE_ID      = os.getenv("CARBON_ISSUE_ID")
 CARBON_PR_ID         = os.getenv("CARBON_PR_ID")
+CARBON_OUTPUT_DIR    = os.getenv("CARBON_OUTPUT_DIR")
+
+# Validate env variables
+def validate_vars(extra_vars: list = None):
+    required_vars = [
+        "AWS_ACCESS_KEY",
+        "AWS_SECRET_KEY",
+        "AWS_BUCKET",
+        "OPENAI_API_KEY",
+        "CARBON_PROJECT",
+        "CARBON_MODEL",
+        "CARBON_INSTRUCTIONS"
+    ]
+
+    if extra_vars:
+        required_vars.extend(extra_vars)
+
+    params = {param: globals().get(param) for param in required_vars}
+
+    for param, value in params.items():
+        if not value:
+            raise ValueError(f"Parameter {param} is missing or empty.")
+        
+    if not os.path.exists(CARBON_FILE_PATH):
+        raise ValueError(f"File {CARBON_FILE_PATH} does not exist.")
+
 
 # Get S3 client using AWS credentials
 def get_s3_client():
@@ -31,6 +61,7 @@ def get_s3_client():
         aws_secret_access_key=AWS_SECRET_KEY
     )
     return session.client("s3")
+
 
 # Get configuration from S3 bucket
 def get_config() -> dict:
@@ -45,6 +76,7 @@ def get_config() -> dict:
     except:
         return {}
 
+
 # Save configuration to S3 bucket
 def save_config(new_config: dict):
     s3client = get_s3_client()
@@ -53,6 +85,7 @@ def save_config(new_config: dict):
         Key=f"{CARBON_PROJECT}.json",
         Body=json.dumps(new_config)
     )
+
 
 ai_client = openai.Client(
     api_key=OPENAI_API_KEY
