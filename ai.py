@@ -1,7 +1,9 @@
 from config import *
 
+
 def get_assistant_id(config):
     return config["assistant_id"] if "assistant_id" in config else None
+
 
 def create_assistant():
     assistant_id = get_assistant_id(config)
@@ -25,6 +27,7 @@ def create_assistant():
             assistant_id=assistant_id, instructions=CARBON_INSTRUCTIONS
         )
 
+
 def upload_file():
     with open(CARBON_FILENAME, 'rb') as file:
         file_object = ai_client.files.create(
@@ -33,7 +36,15 @@ def upload_file():
         )
     return file_object.id
 
+
 def create_thread_for_issue():
+    config = get_config()
+    if not "threads_by_issue" in config:
+        config["threads_by_issue"] = {}
+    
+    if CARBON_ISSUE_ID in config["threads_by_issue"]:
+        raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} already exists.")
+
     file_id = upload_file()
 
     thread = ai_client.beta.threads.create(
@@ -48,16 +59,33 @@ def create_thread_for_issue():
         ]
     )
 
-    config = get_config()
-    if not "threads_by_issue" in config:
-        config["threads_by_issue"] = {}
-
     config["threads_by_issue"][CARBON_ISSUE_ID] = thread.id
     save_config(config)
 
 
+def update_thread_for_issue():
+    config = get_config()
+
+    if "threads_by_issue" not in config or CARBON_ISSUE_ID not in config["threads_by_issue"]:
+        raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} does not exist.")
+
+    ai_client.beta.threads.update(
+        config["threads_by_issue"][CARBON_ISSUE_ID],
+        messages=[
+            {
+                "role": "user",
+                "content": CARBON_REQUEST
+            }
+        ]
+    )
+
+
 def map_thread_to_pr_out_of_issue():
     config = get_config()
+
+    if "threads_by_issue" not in config or CARBON_ISSUE_ID not in config["threads_by_issue"]:
+        raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} does not exist.")
+
     if not "threads_by_pr" in config:
         config["threads_by_pr"] = {}
 
@@ -67,6 +95,9 @@ def map_thread_to_pr_out_of_issue():
 
 def update_thread_for_pr():
     config = get_config()
+
+    if "threads_by_pr" not in config or CARBON_PR_ID not in config["threads_by_pr"]:
+        raise ValueError(f"Thread for PR {CARBON_PR_ID} does not exist.")
 
     ai_client.beta.threads.update(
         config["threads_by_pr"][CARBON_PR_ID],
