@@ -150,7 +150,6 @@ def run_thread(thread_id):
 
 
 def retrieve_thread(thread_id):
-    #ai_client.beta.threads.retrieve(thread_id)
     process_thread(thread_id)
 
 
@@ -169,32 +168,16 @@ def process_thread(thread_id, run_id = None):
 
     for message in messages:
         if message.role == "assistant":
-            print(message)
             for block in message.content:
                 if block.type == "text":
                     answer.append({"type": "text", "text": block.text.value})
-                    if block.text.annotations:
-                        for annotation in block.text.annotations:
-                            if annotation.type == "file_path":
-                                answer.append(
-                                    {
-                                        "type": "file",
-                                        "file": save_file(
-                                            annotation.file_path.file_id
-                                        ),
-                                        "filename": os.path.basename(
-                                            annotation.text.split(":")[-1]
-                                        ),
-                                    },
-                            )
-                elif block.type == "file":
-                    answer.insert(
-                        0,
-                        {
-                            "type": "file",
-                            "file": save_file(block.file.file_id),
-                        },
-                    )
+        for attachment in message.attachments:
+            answer.append(
+                {
+                    "type": "file",
+                    "file": save_file(attachment.file_id),
+                },
+            )
 
     save_messages_to_file(answer)
 
@@ -202,12 +185,17 @@ def process_thread(thread_id, run_id = None):
 def save_file(file_id: str) -> str:
     base_filename = os.path.basename(CARBON_FILE_PATH)
     file_path = os.path.join(CARBON_OUTPUT_DIR, base_filename)
-    file_content = ai_client.files.download(file_id=file_id)
+    try:
+        file_content = ai_client.files.content(file_id=file_id)
+        file_data_bytes = file_content.read()
 
-    with open(file_path, "wb") as file:
-        file.write(file_content)
+        with open(file_path, "wb") as file:
+            file.write(file_data_bytes)
+            file.close()
 
-    return file_path
+        return file_path
+    except:
+        return None
 
 
 def save_messages_to_file(messages: list[dict]):
