@@ -141,8 +141,8 @@ def run_thread(thread_id):
     assistant_id = get_assistant()
 
     run = ai_client.beta.threads.runs.create_and_poll(
-        thread_id=thread_id,
         assistant_id=assistant_id,
+        thread_id=thread_id,
     )
 
     if run.status == "completed":
@@ -164,49 +164,34 @@ def process_thread(thread_id, run_id = None):
             run_id=run_id
         )
 
-    for message in messages:
-        print (message)
+    print ("=== Received messages from AI ===\n")
+    print (messages)
+    print("\n")
 
+    for message in messages:
         if message.role == "assistant":
             for block in message.content:
                 if block.type == "text":
-                    parsed_json = extract_json_from_text(block.text.value)
+                    print ("=== Received a message from AI ===")
+                    print (block.text.value)
+                    print ("\n\n")
 
-                    if "commit_message" in parsed_json:
-                        save_text_to_file(parsed_json["commit_message"], "commit_message.txt")
+                    if block.text.annotations:
+                        for annotion in block.text.annotations:
+                            if annotion.type == "file_path":
+                                if "zip" in annotion.text:
+                                    save_file(annotion.file_path.file_id, os.path.basename(CARBON_FILE_PATH))
+                                if "json" in annotion.text:
+                                    save_file(annotion.file_path.file_id, "output.json")
 
-                    if "details" in parsed_json:
-                        save_text_to_file(parsed_json["details"], "details.txt")
-
-                    #if "file_id" in parsed_json:
-                    #    save_file(parsed_json["file_id"])
-
-        for attachment in message.attachments:
-            save_file(attachment.file_id)
-
-
-def extract_json_from_text(text):
-    try:
-        json_str = text[text.find("```json") + len("```json"):text.rfind("```")]
-        return json.loads(json_str)
-    except json.JSONDecodeError:
-        return []
-
-
-def save_text_to_file(text: str, filename: str):
-    file_path = os.path.join(CARBON_OUTPUT_DIR, filename)
-
-    with open(file_path, "w") as file:
-        file.write(text)
-
-                            
-def save_file(file_id: str) -> str:
-    print (f"Saving file {file_id}")
+        # for attachment in message.attachments:
+        #    print (attachment)
+      
+def save_file(file_id: str, filename: str) -> str:
+    print (f"=== Saving the file {file_id} ===")
 
     try:
-        base_filename = os.path.basename(CARBON_FILE_PATH)
-        file_path = os.path.join(CARBON_OUTPUT_DIR, base_filename)
-
+        file_path = os.path.join(CARBON_OUTPUT_DIR, filename)
         file_content = ai_client.files.content(file_id=file_id)
         file_data_bytes = file_content.read()
 
@@ -214,8 +199,13 @@ def save_file(file_id: str) -> str:
             file.write(file_data_bytes)
             file.close
 
+        print(f"The file has been saved successfully.")
+        print ("\n")
+
         return file_path
 
     except Exception as e:
-        print(f"Could not save file: {e}")
+        print(f"Could not save the file: {e}.")
+        print ("\n")
+
         return None 

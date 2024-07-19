@@ -8,12 +8,10 @@ import openai
 GLOBAL_INSTRUCTIONS = (
     "You are the developer. I am providing a zipped file which contains code. "
     "I will ask you to modify this code according to my request. "
-    "An output file should be a zipped file with the same name as the input file. "
+    "Provide a brief commit message and extended details of changes you made. "
     "Attach an output file to your response so I can download it. "
-    "Also provide a brief commit message of changes you made. "
-    "Also provide more details of what you have made. "
-    "Output your messages in JSON format with follwoing attributes: 'commit_message', 'details', 'file_id'. "
-    "Make sure you attach a file to the response!!! "
+    "An output file should be a zipped file with the same name as the input file. "
+    "Also attach a file in JSON format with the follwoing attributes: 'commit_message', 'extended_details'. "
 )
 DEFAULT_MODEL = "gpt-4o"
 
@@ -37,6 +35,7 @@ CARBON_REQUEST       = os.getenv("CARBON_REQUEST")
 CARBON_ISSUE_ID      = os.getenv("CARBON_ISSUE_ID")
 CARBON_PR_ID         = os.getenv("CARBON_PR_ID")
 CARBON_OUTPUT_DIR    = os.getenv("CARBON_OUTPUT_DIR")
+
 
 # Validate env variables
 def validate_vars(extra_vars: list = None):
