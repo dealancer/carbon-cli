@@ -5,7 +5,16 @@ import boto3
 import openai
 
 # Global settings
-GLOBAL_INSTRUCTIONS = "You are the developer. I am provideing a zipped file which contains code. I will ask you to modify this code according to my request. Output should be a zipped file with the same name as the input file. Attach an output file so I can download it. Also provide a brief commit message of changes you made."
+GLOBAL_INSTRUCTIONS = (
+    "You are the developer. I am providing a zipped file which contains code. "
+    "I will ask you to modify this code according to my request. "
+    "An output file should be a zipped file with the same name as the input file. "
+    "Attach an output file to your response so I can download it. "
+    "Also provide a brief commit message of changes you made. "
+    "Also provide more details of what you have made. "
+    "Output your messages in JSON format with follwoing attributes: 'commit_message', 'details', 'file_id'. "
+    "Make sure you attach a file to the response!!! "
+)
 DEFAULT_MODEL = "gpt-4o"
 
 # Load environment variables from .env file

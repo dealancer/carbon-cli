@@ -164,52 +164,58 @@ def process_thread(thread_id, run_id = None):
             run_id=run_id
         )
 
-    answer = []
-
     for message in messages:
+        print (message)
+
         if message.role == "assistant":
             for block in message.content:
                 if block.type == "text":
-                    answer.append({"type": "text", "text": block.text.value})
+                    parsed_json = extract_json_from_text(block.text.value)
+
+                    if "commit_message" in parsed_json:
+                        save_text_to_file(parsed_json["commit_message"], "commit_message.txt")
+
+                    if "details" in parsed_json:
+                        save_text_to_file(parsed_json["details"], "details.txt")
+
+                    #if "file_id" in parsed_json:
+                    #    save_file(parsed_json["file_id"])
+
         for attachment in message.attachments:
-            answer.append(
-                {
-                    "type": "file",
-                    "file": save_file(attachment.file_id),
-                },
-            )
-
-    save_messages_to_file(answer)
+            save_file(attachment.file_id)
 
 
-def save_file(file_id: str) -> str:
-    base_filename = os.path.basename(CARBON_FILE_PATH)
-    file_path = os.path.join(CARBON_OUTPUT_DIR, base_filename)
+def extract_json_from_text(text):
     try:
+        json_str = text[text.find("```json") + len("```json"):text.rfind("```")]
+        return json.loads(json_str)
+    except json.JSONDecodeError:
+        return []
+
+
+def save_text_to_file(text: str, filename: str):
+    file_path = os.path.join(CARBON_OUTPUT_DIR, filename)
+
+    with open(file_path, "w") as file:
+        file.write(text)
+
+                            
+def save_file(file_id: str) -> str:
+    print (f"Saving file {file_id}")
+
+    try:
+        base_filename = os.path.basename(CARBON_FILE_PATH)
+        file_path = os.path.join(CARBON_OUTPUT_DIR, base_filename)
+
         file_content = ai_client.files.content(file_id=file_id)
         file_data_bytes = file_content.read()
 
         with open(file_path, "wb") as file:
             file.write(file_data_bytes)
-            file.close()
+            file.close
 
         return file_path
-    except:
-        return None
 
-
-def save_messages_to_file(messages: list[dict]):
-    file_path = os.path.join(CARBON_OUTPUT_DIR, "messages.txt")
-
-    if not os.path.exists(CARBON_OUTPUT_DIR):
-        os.makedirs(CARBON_OUTPUT_DIR)
-
-    with open(file_path, "w") as file:
-        for message in messages:
-            if message["type"] == "text":
-                file.write(f"Text: {message['text']}\n")
-            elif message["type"] == "code":
-                file.write(f"Code: {message['code']}\n")
-            elif message["type"] == "file":
-                file.write(f"File Path: {message['file']}\n")
-
+    except Exception as e:
+        print(f"Could not save file: {e}")
+        return None 
