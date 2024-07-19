@@ -53,6 +53,12 @@ def validate_vars(extra_vars: list = None):
     if not os.path.exists(CARBON_FILE_PATH):
         raise ValueError(f"File {CARBON_FILE_PATH} does not exist.")
 
+    if not os.path.exists(CARBON_OUTPUT_DIR):
+        try:
+            os.makedirs(CARBON_OUTPUT_DIR)
+        except Exception as e:
+            raise ValueError(f"Could not create directory {CARBON_OUTPUT_DIR}: {e}")
+
 
 # Get S3 client using AWS credentials
 def get_s3_client():

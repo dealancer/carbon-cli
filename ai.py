@@ -120,7 +120,7 @@ def update_thread_for_pr():
     return thread_id
 
 
-def run_thread(thread_id) -> list[dict]:
+def run_thread(thread_id):
     assistant_id = get_assistant_id()
 
     run = ai_client.beta.threads.runs.create_and_poll(
@@ -145,23 +145,36 @@ def run_thread(thread_id) -> list[dict]:
                         answer.insert(
                             0,
                             {
-                                "type": "image",
+                                "type": "file",
                                 "file": save_file(block.file.file_id),
                             },
                         )
 
-    return answer
+    save_messages_to_file(answer)
 
 def save_file(file_id: str) -> str:
     base_filename = os.path.basename(CARBON_FILE_PATH)
     file_path = os.path.join(CARBON_OUTPUT_DIR, base_filename)
-
     file_content = ai_client.files.download(file_id=file_id)
-
-    if not os.path.exists(CARBON_OUTPUT_DIR):
-        os.makedirs(CARBON_OUTPUT_DIR)
 
     with open(file_path, "wb") as file:
         file.write(file_content)
 
     return file_path
+
+
+def save_messages_to_file(messages: list[dict]):
+    file_path = os.path.join(CARBON_OUTPUT_DIR, "messages.txt")
+
+    if not os.path.exists(CARBON_OUTPUT_DIR):
+        os.makedirs(CARBON_OUTPUT_DIR)
+
+    with open(file_path, "w") as file:
+        for message in messages:
+            if message["type"] == "text":
+                file.write(f"Text: {message['text']}\n")
+            elif message["type"] == "code":
+                file.write(f"Code: {message['code']}\n")
+            elif message["type"] == "file":
+                file.write(f"File Path: {message['file']}\n")
+
