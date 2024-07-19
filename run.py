@@ -41,6 +41,20 @@ def main():
         thread_id = update_thread_for_pr()
         run_thread(thread_id)
 
+    elif command == "retrieve" and object == "issue":
+        validate_vars([
+            "CARBON_ISSUE_ID",
+        ])
+        thread_id = get_thread_by_issue()
+        retrieve_thread(thread_id)
+
+    elif command == "retrieve" and object == "pr":
+        validate_vars([
+            "CARBON_PR_ID",
+        ])
+        thread_id = get_thread_by_pr()
+        retrieve_thread(thread_id)
+
     else:
         raise ValueError(f"Invalid command '{command}' or object '{object}' provided.")
     

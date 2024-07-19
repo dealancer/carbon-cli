@@ -5,8 +5,8 @@ import boto3
 import openai
 
 # Global settings
-GLOBAL_INSTRUCTIONS = "You are the developer. I am provideing a zipped file which contains code. I will ask you to modify this code according to my request. Output should be a zipped file with the same name as the input file. Also provide a brief commit message of changes you made."
-DEFAULT_MODEL = "gpt-3.5-turbo"
+GLOBAL_INSTRUCTIONS = "You are the developer. I am provideing a zipped file which contains code. I will ask you to modify this code according to my request. Output should be a zipped file with the same name as the input file. Attach an output file so I can download it. Also provide a brief commit message of changes you made."
+DEFAULT_MODEL = "gpt-4o"
 
 # Load environment variables from .env file
 load_dotenv()
@@ -79,6 +79,7 @@ def get_config() -> dict:
             Key=f"{CARBON_PROJECT}.json"
         )
         return json.loads(response["Body"].read())
+
     except:
         return {}
 

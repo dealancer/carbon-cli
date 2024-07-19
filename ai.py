@@ -1,31 +1,30 @@
 from config import *
 
 
-def get_assistant_id(config):
-    return config["assistant_id"] if "assistant_id" in config else None
+def get_assistant():
+    config = get_config()
 
-
-def create_assistant():
-    assistant_id = get_assistant_id(config)
-
-    if not assistant_id:
-        new_assistant = ai_client.beta.assistants.create(
-            model=CARBON_MODEL,
-            instructions=CARBON_INSTRUCTIONS,
-            name=CARBON_PROJECT,
-            tools=[
-                {
-                    "type": "code_interpreter",
-                }
-            ]
-        )
-        config = get_config()
-        config["assistant_id"] = new_assistant.id
-        save_config(config)
-    else:
+    if "assistant_id" in config:
         ai_client.beta.assistants.update(
-            assistant_id=assistant_id, instructions=CARBON_INSTRUCTIONS
+            assistant_id=config["assistant_id"], instructions=CARBON_INSTRUCTIONS
         )
+        return config["assistant_id"]
+
+    new_assistant = ai_client.beta.assistants.create(
+        model=CARBON_MODEL,
+        instructions=CARBON_INSTRUCTIONS,
+        name=CARBON_PROJECT,
+        tools=[
+            {
+                "type": "code_interpreter",
+            }
+        ]
+    )
+
+    config["assistant_id"] = new_assistant.id
+    save_config(config)
+
+    return new_assistant.id
 
 
 def upload_file():
@@ -42,8 +41,8 @@ def create_thread_for_issue():
     if not "threads_by_issue" in config:
         config["threads_by_issue"] = {}
     
-    if CARBON_ISSUE_ID in config["threads_by_issue"]:
-        raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} already exists.")
+    # if CARBON_ISSUE_ID in config["threads_by_issue"]:
+    #    raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} already exists.")
 
     file_id = upload_file()
 
@@ -120,37 +119,85 @@ def update_thread_for_pr():
     return thread_id
 
 
+def get_thread_by_issue():
+    config = get_config()
+
+    if CARBON_ISSUE_ID not in config["threads_by_issue"]:
+        raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} does not exist.")
+
+    return config["threads_by_issue"][CARBON_ISSUE_ID]
+
+
+def get_thread_by_pr():
+    config = get_config()
+
+    if CARBON_PR_ID not in config["threads_by_pr"]:
+        raise ValueError(f"Thread for PR {CARBON_PR_ID} does not exist.")
+
+    return config["threads_by_pr"][CARBON_PR_ID]
+
+
 def run_thread(thread_id):
-    assistant_id = get_assistant_id()
+    assistant_id = get_assistant()
 
     run = ai_client.beta.threads.runs.create_and_poll(
         thread_id=thread_id,
         assistant_id=assistant_id,
     )
 
+    if run.status == "completed":
+        process_thread(thread_id, run.id)
+
+
+def retrieve_thread(thread_id):
+    #ai_client.beta.threads.retrieve(thread_id)
+    process_thread(thread_id)
+
+
+def process_thread(thread_id, run_id = None):
+    if run_id is None:
+        messages = ai_client.beta.threads.messages.list(
+            thread_id=thread_id
+        )
+    else:
+        messages = ai_client.beta.threads.messages.list(
+            thread_id=thread_id,
+            run_id=run_id
+        )
+
     answer = []
 
-    if run.status == "completed":
-        messages = ai_client.beta.threads.messages.list(
-            thread_id=thread_id, run_id=run.id
-        )
-        for message in messages:
-            if message.role == "assistant":
-                for block in message.content:
-                    if block.type == "text":
-                        answer.append({"type": "text", "text": block.text.value})
-                    elif block.type == "code":
-                        answer.append({"type": "code", "code": block.code.value})
-                    elif block.type == "file":
-                        answer.insert(
-                            0,
-                            {
-                                "type": "file",
-                                "file": save_file(block.file.file_id),
-                            },
-                        )
+    for message in messages:
+        if message.role == "assistant":
+            print(message)
+            for block in message.content:
+                if block.type == "text":
+                    answer.append({"type": "text", "text": block.text.value})
+                    if block.text.annotations:
+                        for annotation in block.text.annotations:
+                            if annotation.type == "file_path":
+                                answer.append(
+                                    {
+                                        "type": "file",
+                                        "file": save_file(
+                                            annotation.file_path.file_id
+                                        ),
+                                        "filename": os.path.basename(
+                                            annotation.text.split(":")[-1]
+                                        ),
+                                    },
+                            )
+                elif block.type == "file":
+                    answer.insert(
+                        0,
+                        {
+                            "type": "file",
+                            "file": save_file(block.file.file_id),
+                        },
+                    )
 
     save_messages_to_file(answer)
+
 
 def save_file(file_id: str) -> str:
     base_filename = os.path.basename(CARBON_FILE_PATH)
