@@ -77,7 +77,7 @@ Project Carbon is an experimental AI agent CLI to be used with GitHub. It is sup
 1. Run `carbon`:
    ```bash
    CARBON_ISSUE_ID=2 \
-   CARBON_REQUEST="Also add another route /name/{NAME} and output 'Hello {NAME}!'. Keep in mind that {name} is a parameter." \
+   CARBON_REQUEST="Also add another route /name/{name} and output 'Hello {name}!'. Keep in mind that {name} is a parameter." \
    python run.py update issue
    ```
 
@@ -96,11 +96,35 @@ Project Carbon is an experimental AI agent CLI to be used with GitHub. It is sup
    cat work/output.json
    ```
 
-### Asssociate an issue with PR
+### Asssociate an issue with a PR
 
 1. Run `carbon`:
    ```bash
    CARBON_ISSUE_ID=2 \
-   CARBON_PR_ID=52 \
+   CARBON_PR_ID=123 \
    python run.py map pr
+   ```
+
+###  Update a PR
+
+1. Run `carbon`:
+   ```bash
+   CARBON_PR_ID=123 \
+   CARBON_REQUEST="Add another route /name/{age} and output 'Are you {age} years old?'. Keep in mind that {age} is a parameter." \
+   python run.py update pr
+   ```
+
+2. Unzip `flask-docker-boilerplate.zip`:
+   ```
+   unzip -o work/flask-docker-boilerplate.zip
+   ```
+
+3. Check out changes:
+   ```
+   git -C work/flask-docker-boilerplate diff
+   ```
+
+4. Check out commit message:
+   ```
+   cat work/output.json
    ```
