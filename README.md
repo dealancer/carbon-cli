@@ -2,16 +2,16 @@
 
 Project Carbon is an experimental AI CLI agent to be used with GitHub. It is supposed to by called by GitHub Actions.
 
-## Supported commands
+## Commands
 
 | Command | Parameters | Description |
 |---------|------------|-------------|
-| create issue | CARBON_ISSUE_ID, CARBON_REQUEST | Creates a new thread for an issue, uploads the specified file, and runs the initial request through the AI |
-| map pr | CARBON_ISSUE_ID, CARBON_PR_ID | Maps an existing issue thread to a pull request for continued conversation |
-| update issue | CARBON_ISSUE_ID, CARBON_REQUEST | Updates an existing issue thread with a new request and runs it through the AI |
-| update pr | CARBON_PR_ID, CARBON_REQUEST | Updates an existing pull request thread with a new request and runs it through the AI |
-| retrieve issue | CARBON_ISSUE_ID | Retrieves and displays all messages from an issue's thread |
-| retrieve pr | CARBON_PR_ID | Retrieves and displays all messages from a pull request's thread |
+| create issue | CARBON_ISSUE_ID<br/>CARBON_REQUEST | Creates a new thread for an issue, uploads the specified file, and runs the initial request through the AI. |
+| map pr | CARBON_ISSUE_ID<br/>CARBON_PR_ID | Maps an existing issue thread to a pull request for continued conversation. |
+| update issue | CARBON_ISSUE_ID<br/>CARBON_REQUEST | Updates an existing issue thread with a new request, uploads the specified file, and runs it through the AI. |
+| update pr | CARBON_PR_ID<br/>CARBON_REQUEST | Updates an existing pull request thread with a new request, uploads the specified file, and runs it through the AI. |
+| retrieve issue | CARBON_ISSUE_ID | Retrieves and displays all messages from an issue's thread. |
+| retrieve pr | CARBON_PR_ID | Retrieves and displays all messages from a pull request's thread. |
 
 
 ## Setup
