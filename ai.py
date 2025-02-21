@@ -28,9 +28,10 @@ def get_assistant():
 
 
 def upload_file():
-    with open(CARBON_FILE_PATH, 'rb') as file:
+    file_path = os.path.join(CARBON_WORK_DIR, CARBON_PROJECT_FILENAME)
+    with open(file_path, 'rb') as file:
         file_object = ai_client.files.create(
-            file=(os.path.basename(CARBON_FILE_PATH), file),
+            file=(os.path.basename(file_path), file),
             purpose="assistants"
         )
     return file_object.id
@@ -53,7 +54,7 @@ def create_thread_for_issue():
                 "content": CARBON_REQUEST,
                 "attachments": [
                     {"file_id": file_id, "tools": [{"type": "code_interpreter"}]}
-                ],
+                ]
             }
         ]
     )
@@ -162,6 +163,9 @@ def process_thread(thread_id, run_id = None):
 
     for message in messages:
         if message.role == "assistant":
+            for attachment in message.attachments:
+                save_file(attachment.file_id, attachment.file_id)
+
             for block in message.content:
                 if block.type == "text":
                     print ("=== Received a message from AI ===")
@@ -169,21 +173,22 @@ def process_thread(thread_id, run_id = None):
                     print ("\n\n")
 
                     if block.text.annotations:
-                        for annotion in block.text.annotations:
-                            if annotion.type == "file_path":
-                                if "zip" in annotion.text:
-                                    save_file(annotion.file_path.file_id, os.path.basename(CARBON_FILE_PATH))
-                                if "json" in annotion.text:
-                                    save_file(annotion.file_path.file_id, "output.json")
+                        for annotation in block.text.annotations:
+                            if annotation.type == "file_path":
+                                file_name = os.path.basename(annotation.text)
 
-        for attachment in message.attachments:
-           save_file(attachment.file_id, attachment.file_id)
-      
+                                if file_name.endswith(".zip"):
+                                    save_file(annotation.file_path.file_id, os.path.basename(CARBON_PROJECT_FILENAME))
+                                elif file_name.endswith(".json"):
+                                    save_file(annotation.file_path.file_id, os.path.basename(CARBON_META_FILENAME))
+                                else:
+                                    save_file(annotation.file_path.file_id, file_name)
+
 def save_file(file_id: str, filename: str) -> str:
     print (f"=== Saving the file {file_id} ===")
 
     try:
-        file_path = os.path.join(CARBON_OUTPUT_DIR, filename)
+        file_path = os.path.join(CARBON_WORK_DIR, filename)
         file_content = ai_client.files.content(file_id=file_id)
         file_data_bytes = file_content.read()
 

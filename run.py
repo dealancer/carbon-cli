@@ -11,7 +11,7 @@ def main():
 
     if command == "create" and object == "issue":
         validate_vars([
-            "CARBON_FILE_PATH",
+            "CARBON_PROJECT_FILENAME",
             "CARBON_REQUEST",
             "CARBON_ISSUE_ID",
         ])
