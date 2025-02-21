@@ -41,7 +41,7 @@ Project Carbon is an experimental AI agent CLI to be used with GitHub. It is sup
    ```
    Then fill in the required values for AWS, OpenAI and Carbon settings in the `.env` file.
 
-## Run
+## Examples
 
 ### Create an issue
 
@@ -52,22 +52,55 @@ Project Carbon is an experimental AI agent CLI to be used with GitHub. It is sup
 
 2. Run `carbon`:
    ```bash
-   CARBON_ISSUE_ID=1 \
-   CARBON_REQUEST="Add new route /example to output 'Hello World' message." \
+   CARBON_ISSUE_ID=2 \
+   CARBON_REQUEST="Add new route /example to output 'Hello World!' message." \
    python run.py create issue
    ```
 
 3. Unzip `flask-docker-boilerplate.zip`:
    ```
-   unzip work/flask-docker-boilerplate.zip -d work/
+   unzip -o work/flask-docker-boilerplate.zip
    ```
 
 4. Check out changes:
    ```
-   git diff work/flask-docker-boilerplate
+   git -C work/flask-docker-boilerplate diff
    ```
 
 5. Check out commit message:
    ```
    cat work/output.json
+   ```
+
+### Update an issue
+
+1. Run `carbon`:
+   ```bash
+   CARBON_ISSUE_ID=2 \
+   CARBON_REQUEST="Also add another route /name/{NAME} and output 'Hello {NAME}!'. Keep in mind that {name} is a parameter." \
+   python run.py update issue
+   ```
+
+2. Unzip `flask-docker-boilerplate.zip`:
+   ```
+   unzip -o work/flask-docker-boilerplate.zip
+   ```
+
+3. Check out changes:
+   ```
+   git -C work/flask-docker-boilerplate diff
+   ```
+
+4. Check out commit message:
+   ```
+   cat work/output.json
+   ```
+
+### Asssociate an issue with PR
+
+1. Run `carbon`:
+   ```bash
+   CARBON_ISSUE_ID=2 \
+   CARBON_PR_ID=52 \
+   python run.py map pr
    ```
