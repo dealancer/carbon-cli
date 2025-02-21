@@ -41,8 +41,8 @@ def create_thread_for_issue():
     if not "threads_by_issue" in config:
         config["threads_by_issue"] = {}
     
-    # if CARBON_ISSUE_ID in config["threads_by_issue"]:
-    #    raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} already exists.")
+    if CARBON_ISSUE_ID in config["threads_by_issue"]:
+        raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} already exists.")
 
     file_id = upload_file()
 
@@ -72,14 +72,10 @@ def update_thread_for_issue():
 
     thread_id = config["threads_by_issue"][CARBON_ISSUE_ID]
 
-    ai_client.beta.threads.update(
-        config["threads_by_issue"][CARBON_ISSUE_ID],
-        messages=[
-            {
-                "role": "user",
-                "content": CARBON_REQUEST
-            }
-        ]
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=CARBON_REQUEST
     )
 
     return thread_id
@@ -106,14 +102,10 @@ def update_thread_for_pr():
 
     thread_id = config["threads_by_pr"][CARBON_PR_ID]
 
-    ai_client.beta.threads.update(
-        thread_id,
-        messages=[
-            {
-                "role": "user",
-                "content": CARBON_REQUEST
-            }
-        ]
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=CARBON_REQUEST
     )
 
     return thread_id
@@ -184,8 +176,8 @@ def process_thread(thread_id, run_id = None):
                                 if "json" in annotion.text:
                                     save_file(annotion.file_path.file_id, "output.json")
 
-        # for attachment in message.attachments:
-        #    print (attachment)
+        for attachment in message.attachments:
+           save_file(attachment.file_id, attachment.file_id)
       
 def save_file(file_id: str, filename: str) -> str:
     print (f"=== Saving the file {file_id} ===")
