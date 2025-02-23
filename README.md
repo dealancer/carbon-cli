@@ -12,6 +12,8 @@ Project Carbon is an experimental AI CLI agent to be used with GitHub. It is sup
 | update pr | CARBON_PR_ID<br/>CARBON_REQUEST | Updates an existing pull request thread with a new request and runs it through the AI. |
 | retrieve issue | CARBON_ISSUE_ID | Retrieves and displays all messages from an issue's thread. |
 | retrieve pr | CARBON_PR_ID | Retrieves and displays all messages from a pull request's thread. |
+| delete issue | CARBON_ISSUE_ID | Deletes issue's data. |
+| delete pr | CARBON_PR_ID | Deletes PR's datas. |
 
 
 ## Setup
@@ -139,4 +141,19 @@ Project Carbon is an experimental AI CLI agent to be used with GitHub. It is sup
 4. Check out commit message:
    ```
    cat work/output.json
+   ```
+### Delete issue
+
+1. Run `carbon`:
+   ```bash
+   CARBON_ISSUE_ID=2 \
+   python run.py delete issue
+   ```
+
+### Delete PR
+
+1. Run `carbon`:
+   ```bash
+   CARBON_PR_ID=123 \
+   python run.py delete pr
    ```

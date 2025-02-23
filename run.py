@@ -55,6 +55,18 @@ def main():
         thread_id = get_thread_by_pr()
         retrieve_thread(thread_id)
 
+    elif command == "delete" and object == "issue":
+        validate_vars([
+            "CARBON_ISSUE_ID",
+        ])
+        delete_thread_for_issue()
+
+    elif command == "delete" and object == "pr":
+        validate_vars([
+            "CARBON_PR_ID",
+        ])
+        delete_thread_for_pr()
+
     else:
         raise ValueError(f"Invalid command '{command}' or object '{object}' provided.")
     

@@ -88,6 +88,9 @@ def map_thread_to_pr_out_of_issue():
     if "threads_by_issue" not in config or CARBON_ISSUE_ID not in config["threads_by_issue"]:
         raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} does not exist.")
 
+    if CARBON_PR_ID in config["threads_by_pr"]:
+        raise ValueError(f"Thread for PR {CARBON_PR_ID} already exists.")
+
     if not "threads_by_pr" in config:
         config["threads_by_pr"] = {}
 
@@ -128,6 +131,28 @@ def get_thread_by_pr():
         raise ValueError(f"Thread for PR {CARBON_PR_ID} does not exist.")
 
     return config["threads_by_pr"][CARBON_PR_ID]
+
+
+def delete_thread_for_issue():
+    config = get_config()
+
+    if "threads_by_issue" not in config or CARBON_ISSUE_ID not in config["threads_by_issue"]:
+        raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} does not exist.")
+
+    del config["threads_by_issue"][CARBON_ISSUE_ID]
+
+    save_config(config)
+
+
+def delete_thread_for_pr():
+    config = get_config()
+
+    if "threads_by_pr" not in config or CARBON_PR_ID not in config["threads_by_pr"]:
+        raise ValueError(f"Thread for PR {CARBON_PR_ID} does not exist.")
+
+    del config["threads_by_pr"][CARBON_PR_ID]
+
+    save_config(config)
 
 
 def run_thread(thread_id):
