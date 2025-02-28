@@ -6,39 +6,47 @@ import openai
 
 # Global settings
 GLOBAL_INSTRUCTIONS = (
-    "You are the developer. I am providing a zipped file that contains code. "
+    "You are the developer. I am providing a zipped file that contains project code. "
     "I will ask you to modify this code according to my request. "
-    "Provide a brief commit message and extended details of changes you made. "
-    "Attach two output files in your response so I can download them: "
-    "1. A zipped output file with the same name as the input file, containing the modified code. "
-    "2. A JSON file named 'output_metadata.json' containing the following attributes: 'commit_message', 'extended_details'. "
-    "Both files should be **explicitly attached** in your response, not just referenced in text."
 )
+
+PROMPT_PROJECT = (
+    "Attach a zipped output file, containing the project with modified code. "
+    "A file should be **explicitly attached** in your response, not just referenced in text. "
+    "This file should have zip extension."
+)
+
+PROMPT_META = (
+    "Provide a brief commit message and extended details of changes you made. "
+    "Attach a JSON file containing the following attributes: 'commit_message', 'extended_details'. "
+    "This file should have json extension."
+)
+
 DEFAULT_MODEL = "gpt-4o"
 
 # Load environment variables from .env file
 load_dotenv()
 
 # AWS credentials
-AWS_ACCESS_KEY          = os.getenv("AWS_ACCESS_KEY")
-AWS_SECRET_KEY          = os.getenv("AWS_SECRET_KEY")
-AWS_BUCKET              = os.getenv("AWS_BUCKET")
+AWS_ACCESS_KEY                      = os.getenv("AWS_ACCESS_KEY")
+AWS_SECRET_KEY                      = os.getenv("AWS_SECRET_KEY")
+AWS_BUCKET                          = os.getenv("AWS_BUCKET")
 
 # OpenAI credentials
-OPENAI_API_KEY          = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY                      = os.getenv("OPENAI_API_KEY")
 
 # Carbon settings
-CARBON_PROJECT          = os.getenv("CARBON_PROJECT")
-CARBON_MODEL            = os.getenv("CARBON_MODEL") or DEFAULT_MODEL
-CARBON_INSTRUCTIONS     = os.getenv("CARBON_INSTRUCTIONS") + GLOBAL_INSTRUCTIONS
-CARBON_WORK_DIR         = os.getenv("CARBON_WORK_DIR")
-CARBON_META_FILENAME    = os.getenv("CARBON_META_FILENAME")
-CARBON_PROJECT_FILENAME = os.getenv("CARBON_PROJECT_FILENAME")
+CARBON_PROJECT                      = os.getenv("CARBON_PROJECT")
+CARBON_MODEL                        = os.getenv("CARBON_MODEL") or DEFAULT_MODEL
+CARBON_INSTRUCTIONS                 = os.getenv("CARBON_INSTRUCTIONS") + GLOBAL_INSTRUCTIONS
+CARBON_WORK_DIR                     = os.getenv("CARBON_WORK_DIR")
+CARBON_META_FILENAME                = os.getenv("CARBON_META_FILENAME")
+CARBON_PROJECT_FILENAME             = os.getenv("CARBON_PROJECT_FILENAME")
 
 # Request settings
-CARBON_REQUEST          = os.getenv("CARBON_REQUEST")
-CARBON_ISSUE_ID         = os.getenv("CARBON_ISSUE_ID")
-CARBON_PR_ID            = os.getenv("CARBON_PR_ID")
+CARBON_REQUEST                      = os.getenv("CARBON_REQUEST")
+CARBON_ISSUE_ID                     = os.getenv("CARBON_ISSUE_ID")
+CARBON_PR_ID                        = os.getenv("CARBON_PR_ID")
 
 
 

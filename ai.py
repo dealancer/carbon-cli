@@ -58,11 +58,25 @@ def create_thread_for_issue():
             }
         ]
     )
+    thread_id = thread.id
+    run_thread(thread_id)
 
-    config["threads_by_issue"][CARBON_ISSUE_ID] = thread.id
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=PROMPT_PROJECT
+    )
+    run_thread(thread_id)
+
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=PROMPT_META
+    )
+    run_thread(thread_id)
+
+    config["threads_by_issue"][CARBON_ISSUE_ID] = thread_id
     save_config(config)
-
-    return thread.id
 
 
 def update_thread_for_issue():
@@ -78,8 +92,19 @@ def update_thread_for_issue():
         role="user",
         content=CARBON_REQUEST
     )
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=PROMPT_PROJECT
+    )
+    run_thread(thread_id)
 
-    return thread_id
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=PROMPT_META
+    )
+    run_thread(thread_id)
 
 
 def map_thread_to_pr_out_of_issue():
@@ -111,9 +136,19 @@ def update_thread_for_pr():
         role="user",
         content=CARBON_REQUEST
     )
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=PROMPT_PROJECT
+    )
+    run_thread(thread_id)
 
-    return thread_id
-
+    ai_client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=PROMPT_META
+    )
+    run_thread(thread_id)
 
 def get_thread_by_issue():
     config = get_config()
@@ -121,7 +156,8 @@ def get_thread_by_issue():
     if CARBON_ISSUE_ID not in config["threads_by_issue"]:
         raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} does not exist.")
 
-    return config["threads_by_issue"][CARBON_ISSUE_ID]
+    thread_id = config["threads_by_issue"][CARBON_ISSUE_ID]
+    retrieve_thread(thread_id)
 
 
 def get_thread_by_pr():
@@ -130,7 +166,8 @@ def get_thread_by_pr():
     if CARBON_PR_ID not in config["threads_by_pr"]:
         raise ValueError(f"Thread for PR {CARBON_PR_ID} does not exist.")
 
-    return config["threads_by_pr"][CARBON_PR_ID]
+    thread_id = config["threads_by_pr"][CARBON_PR_ID]
+    retrieve_thread(thread_id)
 
 
 def delete_thread_for_issue():
