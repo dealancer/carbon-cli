@@ -142,7 +142,7 @@ Project Carbon is an experimental AI CLI agent to be used with GitHub. It is sup
    ```
    cat work/output.json
    ```
-### Delete issue
+### Delete an issue
 
 1. Run `carbon`:
    ```bash
@@ -150,7 +150,7 @@ Project Carbon is an experimental AI CLI agent to be used with GitHub. It is sup
    python src/run.py delete issue
    ```
 
-### Delete PR
+### Delete a PR
 
 1. Run `carbon`:
    ```bash
