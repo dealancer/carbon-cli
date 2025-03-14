@@ -1,6 +1,6 @@
 # Project Carbon CLI
 
-Project Carbon is an experimental AI CLI agent to be used with GitHub. It is supposed to by called by GitHub Actions.
+Project Carbon CLI is an experimental AI coding CLI agent to be used with GitHub. It is supposed to by called by GitHub Actions.
 
 ## Commands
 
