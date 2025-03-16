@@ -1,6 +1,6 @@
 # Carbon AI CLI
 
-Project Carbon AI CLI is an experimental AI coding agent CLI to be used with GitHub. It is supposed to be called by GitHub Actions.
+Carbon AI CLI is an experimental AI coding agent CLI to be used with GitHub. It is supposed to be called by GitHub Actions.
 
 ## Commands
 
