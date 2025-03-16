@@ -113,7 +113,7 @@ def map_thread_to_pr_out_of_issue():
     if "threads_by_issue" not in config or CARBON_ISSUE_ID not in config["threads_by_issue"]:
         raise ValueError(f"Thread for issue {CARBON_ISSUE_ID} does not exist.")
 
-    if CARBON_PR_ID in config["threads_by_pr"]:
+    if "threads_by_pr" in config and CARBON_PR_ID in config["threads_by_pr"]:
         raise ValueError(f"Thread for PR {CARBON_PR_ID} already exists.")
 
     if not "threads_by_pr" in config:
