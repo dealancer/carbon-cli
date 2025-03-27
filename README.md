@@ -1,6 +1,6 @@
 # Carbon CLI
 
-Carbon CLI is an experimental vibe coding agent CLI to be used with GitHub. It uses Open AI under the good. It is supposed to be called by GitHub Actions. Please see [Carbon Actions](https://github.com/dealancer/carbon-actions) repository for actions templates and set up.
+Carbon CLI is an experimental vibe coding agent CLI to be used with GitHub. It uses Open AI and AWS S3 under the good. It is supposed to be called by GitHub Actions. Please see [Carbon Actions](https://github.com/dealancer/carbon-actions) repository for actions templates and set up instructions.
 
 ## Commands
 
