@@ -1,6 +1,6 @@
 # Carbon CLI
 
-Carbon CLI is an experimental AI coding agent CLI to be used with GitHub. It is supposed to be called by GitHub Actions.
+Carbon CLI is an experimental vibe coding agent CLI to be used with GitHub. It is supposed to be called by GitHub Actions.
 
 ## Commands
 
