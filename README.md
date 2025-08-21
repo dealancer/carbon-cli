@@ -134,23 +134,23 @@ Carbon CLI is an experimental vibe coding agent CLI to be used with GitHub. It u
    ```
 ### Delete an issue
 
-1. Run `carbon`:
-   ```bash
-   CARBON_ISSUE_ID=2 \
-   python src/run.py delete issue
-   ```
+Run `carbon`:
+```bash
+CARBON_ISSUE_ID=2 \
+python src/run.py delete issue
+```
 
 ### Delete a PR
 
-1. Run `carbon`:
-   ```bash
-   CARBON_PR_ID=123 \
-   python src/run.py delete pr
-   ```
+Run `carbon`:
+```bash
+CARBON_PR_ID=123 \
+python src/run.py delete pr
+```
 
 ## Testing
 
-To test run:
-   ```bash
-   pytest
-   ```
+Run:
+```bash
+pytest
+```
