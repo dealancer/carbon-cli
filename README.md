@@ -45,7 +45,7 @@ Carbon CLI is an experimental vibe coding agent CLI to be used with GitHub. It u
    ```
    Then fill in the required values for AWS, OpenAI and Carbon settings in the `.env` file.
 
-## Examples
+## Usage
 
 ### Create an issue
 
@@ -146,4 +146,11 @@ Carbon CLI is an experimental vibe coding agent CLI to be used with GitHub. It u
    ```bash
    CARBON_PR_ID=123 \
    python src/run.py delete pr
+   ```
+
+## Testing
+
+To test run:
+   ```bash
+   pytest
    ```
