@@ -24,32 +24,22 @@ Carbon CLI is an experimental vibe coding agent CLI to be used with GitHub. It u
    cd carbon
    ```
 
-2. Create a virtual environment:
+2. Install dependencies
    ```bash
-   python -m venv venv
+   pipenv install
    ```
 
-3. Activate the virtual environment:
-   - On Windows:
+3. Activate pipenv shell:
      ```bash
-     .\venv\Scripts\activate
-     ```
-   - On macOS/Linux:
-     ```bash
-     source venv/bin/activate
+     pipenv shell
      ```
 
-4. Install required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-5. Clone a project you would like to work with into `work` directory:
+4. Clone a project you would like to work with into `work` directory:
    ```bash
    git clone git@github.com:dealancer/flask-docker-boilerplate.git work/flask-docker-boilerplate
    ```
 
-6. Prepare `.env` file by copying one from template:
+5. Prepare `.env` file by copying one from template:
    ```bash
    cp .env.example .env
    ```
